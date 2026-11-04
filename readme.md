@@ -6,4 +6,4 @@ The upper bound of the shortest distinguishing string between the languages of t
 known, but we seek to determine what the length of this string is in practice.
 
 We experimentally determine the length of this string for randomly generated DFAs as well
-as several datasets, then analyze the findings.
+as several DFAs from several datasets, then analyze the findings.
