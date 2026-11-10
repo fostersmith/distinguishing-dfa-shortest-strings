@@ -12,18 +12,14 @@ project_root = os.path.abspath(os.path.join(os.path.dirname(__file__), '..'))
 sys.path.append(project_root)
 from random_dfa_generation.random_dfa import DFA
 
+import string
+alphabet = set(string.ascii_lowercase)
+
 def load_as_DFA(reg):
-    as_lib_nfa = automata_lib_NFA.from_regex(reg)
+    as_lib_nfa = automata_lib_NFA.from_regex(reg, input_symbols=alphabet)
     as_lib_dfa = automata_lib_DFA.from_nfa(as_lib_nfa, minify=True).to_complete()
     #skipping custom implementation because this lib has a MUCH FASTER symmetric difference
     return as_lib_dfa
-    #return DFA (
-    #        Q= as_lib_dfa.states,
-    #        Sigma= as_lib_dfa.input_symbols,
-    #        delta= as_lib_dfa.transitions,
-    #        q0= as_lib_dfa.initial_state,
-    #        F= as_lib_dfa.final_states
-    #        )
 
 # merge input_symbols for two automata_lib_DFA (give them the same language)
 # returns a partial DFA

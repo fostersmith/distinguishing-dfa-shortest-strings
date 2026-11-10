@@ -6,6 +6,9 @@ import pandas as pd
 import automata.regex.regex as regex_lib
 from automata.fa.nfa import NFA
 
+import string
+alphabet = set(string.ascii_lowercase)
+
 if __name__ == "__main__":
     df = pd.read_json("hf://datasets/innovatorved/regex_dataset/data.json")
 
@@ -31,7 +34,7 @@ if __name__ == "__main__":
             # this library refuses to load certain regexes without invalidating them,
             # and i don't have time to figure out what is happening. this takes forever
             # but it works for now
-            _ = NFA.from_regex(regex)
+            _ = NFA.from_regex(regex, input_symbols=alphabet)
         except:
             drop_rows.append(i)
     df.drop(drop_rows, inplace=True)
