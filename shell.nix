@@ -3,9 +3,15 @@ with pkgs;
 let
   pythonPackages = python314Packages;
 in
-mkShellNoCC {
+mkShell {
   packages = [
     pythonPackages.python
+    pythonPackages.pip
     pythonPackages.matplotlib
   ];
+  shellHook = ''
+    python -m venv .venv
+    source .venv/bin/activate
+    pip install -r requirements.txt
+  '';
 }

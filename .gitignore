@@ -1,3 +1,5 @@
 **.json
 **.jpg
+**.csv
+**/regex_data.csv
 __pycache__
