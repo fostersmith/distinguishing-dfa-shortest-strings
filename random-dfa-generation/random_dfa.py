@@ -1,7 +1,7 @@
 from typing import TypeVar, Generic
 from collections.abc import Callable
 from random import randint
-from itertools import product
+from itertools import product, chain, combinations_with_replacement
 import random
 
 # alphabet member type
@@ -124,6 +124,23 @@ class DFA(Generic[T,A]):
         return DFA(Q, Sigma, delta, q0, F)
 
     """
+    combination of BFS and brute force to find the shortest distinguishing string between
+    two DFAs
+    """
+    def shortest_distinguishing(A1, A2, max_brute_force_len=4):
+        if A1.Sigma != A2.Sigma:
+            raise ValueError("A1 and A2 must share an alphabet")
+        Sigma_ordered = list(A1.Sigma)
+
+        for i in range(max_brute_force_len):
+            gen = combinations_with_replacement(Sigma_ordered, i)
+            for w in gen:
+                if bool(A1.accepts(w)) ^ bool(A2.accepts(w)):
+                    return w
+
+        return DFA.symmetric_difference(A1, A2).shortest_accepted()
+
+    """
     generate a random DFA with n states under Sigma
 
     p is probability for a state to be in F
@@ -186,3 +203,9 @@ class DFA(Generic[T,A]):
                 ))
         return dfas
 
+if __name__ == "__main__":
+    import pdb
+    random.seed(0)
+    Sigma = set(range(32))
+    A = DFA.generate_random(Sigma, 10)
+    B = DFA.generate_random(Sigma, 10)

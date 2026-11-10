@@ -16,12 +16,13 @@ def run_experiment(alphabet_size,
                    comparisons,
                    f_prob,
                    seed,
-                   out_dir):
+                   out_dir,
+                   verbose=True):
     # prep dirs
     os.makedirs(out_dir, exist_ok=True)
-    samples_file = os.path.join(args.out_dir, "samples.json")
-    results_file = os.path.join(args.out_dir, "results.json")
-    metrics_file = os.path.join(args.out_dir, "metrics.json")
+    samples_file = os.path.join(out_dir, "samples.json")
+    results_file = os.path.join(out_dir, "results.json")
+    metrics_file = os.path.join(out_dir, "metrics.json")
 
     # seed
     random.seed(seed)
@@ -30,16 +31,18 @@ def run_experiment(alphabet_size,
     Sigma = set(range(alphabet_size))
 
     ## generate random samples
-    print ("generating samples...")
-    start = time.time()
+    if verbose:
+        print ("generating samples...")
+        start = time.time()
 
     samples = []
     for _ in range(sample_count):
         sample = DFA.generate_random(Sigma, randint(min_dfa_size, max_dfa_size), f_prob)
         samples.append(sample)
 
-    elapsed = time.time() - start
-    print(f"generated {sample_count} samples in {elapsed} seconds.")
+    if verbose:
+        elapsed = time.time() - start
+        print(f"generated {sample_count} samples in {elapsed} seconds.")
 
     ## write samples to file
     with open(samples_file, 'w') as f:
@@ -56,8 +59,9 @@ def run_experiment(alphabet_size,
         json.dump({'Sigma': list(Sigma), 'samples': sample_dicts}, f)
 
     ## run comparisons
-    print("making comparisons...")
-    start = time.time()
+    if verbose:
+        print("making comparisons...")
+        start = time.time()
 
     test_results = []
     for _ in range(comparisons):
@@ -72,7 +76,7 @@ def run_experiment(alphabet_size,
         B = samples[second]
 
         # NOTE remember this could be None
-        shortest_distinguishing = DFA.symmetric_difference(A,B).shortest_accepted()
+        shortest_distinguishing = DFA.shortest_distinguishing(A,B)
 
         test_results.append({
             "A_index": first,
@@ -81,8 +85,9 @@ def run_experiment(alphabet_size,
             "shortest_distinguishing": shortest_distinguishing,
             })
     
-    elapsed = time.time() - start
-    print(f"made {comparisons} comparisons in {elapsed} seconds")
+    if verbose:
+        elapsed = time.time() - start
+        print(f"made {comparisons} comparisons in {elapsed} seconds")
 
     with open(results_file, 'w') as f:
         json.dump(test_results, f)
@@ -108,13 +113,13 @@ def run_experiment(alphabet_size,
 
     with open(metrics_file, 'w') as f:
         params = {
-                'alphabet_size': args.alphabet_size,
-                'min_dfa_size': args.min_dfa_size,
-                'max_dfa_size': args.max_dfa_size,
-                'sample_count': args.sample_count,
-                'comparisons': args.comparisons,
-                'f_prob': args.F_prob,
-                'seed': args.seed
+                'alphabet_size': alphabet_size,
+                'min_dfa_size': min_dfa_size,
+                'max_dfa_size': max_dfa_size,
+                'sample_count': sample_count,
+                'comparisons': comparisons,
+                'f_prob': f_prob,
+                'seed': seed
                 }
         json.dump({'params': params, 'metrics': metrics}, f)
 
