@@ -34,7 +34,11 @@ if __name__ == "__main__":
             # this library refuses to load certain regexes without invalidating them,
             # and i don't have time to figure out what is happening. this takes forever
             # but it works for now
-            _ = NFA.from_regex(regex, input_symbols=alphabet)
+            nfa = NFA.from_regex(regex, input_symbols=alphabet)
+
+            # also check for empty
+            if len(nfa.final_states) == 0:
+                raise Exception()
         except:
             drop_rows.append(i)
     df.drop(drop_rows, inplace=True)

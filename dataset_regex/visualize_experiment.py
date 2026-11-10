@@ -7,8 +7,10 @@ if __name__ == "__main__":
     with open(filename, 'r') as f:
         results = json.load(f)
 
-    distribution = [len(results['distinguishing'][i]) for i in range(len(results['reg1']))
+    distribution = [len(results['distinguishing'][i])
+                    for i in range(len(results['reg1']))
                     if results['has_distinguishing'][i] == True]
+
     lengths = list(range(max(distribution)+1))
     counts = [0 for _ in lengths]
     for sample in distribution:
@@ -21,3 +23,12 @@ if __name__ == "__main__":
     plt.ylabel('Count')
     plt.savefig('dataset_regex/fig.jpg')
 
+    import statistics
+    mu = statistics.mean(distribution)
+    s2 = statistics.variance(distribution)
+
+    print(f"Mean SDS length: {mu}")
+    print(f"Variance: {s2}")
+
+    import pdb
+    pdb.set_trace()

@@ -1,5 +1,6 @@
 **.json
 **.jpg
 **.csv
+**.zip
 **/regex_data.csv
 __pycache__
