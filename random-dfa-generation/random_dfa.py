@@ -2,10 +2,7 @@ from typing import TypeVar, Generic
 from collections.abc import Callable
 from random import randint
 from itertools import product
-import argparse
 import random
-import pdb
-import json
 
 # alphabet member type
 A = TypeVar('A')
@@ -20,11 +17,6 @@ def every_string(Sigma: list[A], n: int) -> list[list[A]]:
     else:
         prev = every_string(Sigma, n-1)
         return [ [ci] + cj for ci, cj in product(Sigma, prev) ]
-        #builder = []
-        #for ci in Sigma:
-        #    for cj in prev:
-        #        builder.append([ci] + cj)
-        #return builder
 
 class DFA(Generic[T,A]):
     """
@@ -194,108 +186,3 @@ class DFA(Generic[T,A]):
                 ))
         return dfas
 
-if __name__ == "__main__":
-    parser = argparse.ArgumentParser(
-            description="run shortest strings expirement on randomly generated DFAs")
-    parser.add_argument('-a', '--alphabet-size', type=int)
-    parser.add_argument('-m', '--min-dfa-size', type=int, default=1)
-    parser.add_argument('-M', '--max-dfa-size', type=int)
-    parser.add_argument('-S', '--sample-count', type=int)
-    parser.add_argument('-c', '--comparisons', type=int)
-    parser.add_argument('-p', '--F-prob' , type=float, default=0.5,
-        help="probability for a state to be in F")
-    parser.add_argument('--seed', type=int, default=randint(0, 1024))
-
-    parser.add_argument('--out-dir', type=str, default='experiments/random/last')
-
-    args = parser.parse_args()
-    alphabet_size = args.alphabet_size
-    min_dfa_size = args.min_dfa_size
-    max_dfa_size = args.max_dfa_size
-    sample_count = args.sample_count
-    comparisons = args.comparisons
-    f_prob = args.F_prob
-
-    import os
-    os.makedirs(args.out_dir)
-    samples_file = os.path.join(args.out_dir, "samples.json")
-    results_file = os.path.join(args.out_dir, "results.json")
-    metrics_file = os.path.join(args.out_dir, "metrics.json")
-
-    random.seed(args.seed)
-    
-    # run the experiment
-
-    ## alphabet with correct size
-    Sigma = set(range(alphabet_size))
-
-    ## generate random samples
-    samples = []
-    for _ in range(sample_count):
-        sample = DFA.generate_random(Sigma, randint(min_dfa_size, max_dfa_size), f_prob)
-        samples.append(sample)
-
-    ## write samples to file
-    with open(samples_file, 'w') as f:
-        sample_dicts = []
-        for dfa in samples:
-            sample_dict = {
-                    'Q': list(dfa.Q), 
-                    'delta': dfa.delta, 
-                    'q0': dfa.q0, 
-                    'F': list(dfa.F)
-                    }
-            sample_dicts.append(sample_dict)
-
-        json.dump({'Sigma': list(Sigma), 'samples': sample_dicts}, f)
-
-    test_results = []
-    ## run comparisons
-    for _ in range(comparisons):
-        # don't compare same sample
-        first = 0
-        second = 0
-        while first == second:
-            first = random.randrange(sample_count)
-            second = random.randrange(sample_count)
-
-        A = samples[first]
-        B = samples[second]
-
-        # NOTE remember this could be None
-        shortest_distinguishing = DFA.symmetric_difference(A,B).shortest_accepted()
-
-        test_results.append({
-            "A_index": first,
-            "B_index": second,
-            "shortest_distinguishing": shortest_distinguishing,
-            })
-
-    with open(results_file, 'w') as f:
-        json.dump(test_results, f)
-
-    ## calculate metrics
-    import statistics
-    metrics = {}
-    str_lens = [len(res['shortest_distinguishing']) for res in test_results]
-
-    metrics['mean'] = statistics.mean(str_lens)
-    metrics['median'] = statistics.median(str_lens)
-    metrics['sample_variance'] = statistics.variance(str_lens)
-    metrics['pop_variance'] = statistics.pvariance(str_lens)
-
-    with open(metrics_file, 'w') as f:
-        params = {
-                'alphabet_size': args.alphabet_size,
-                'min_dfa_size': args.min_dfa_size,
-                'max_dfa_size': args.max_dfa_size,
-                'sample_count': args.sample_count,
-                'comparisons': args.comparisons,
-                'f_prob': args.F_prob,
-                'seed': args.seed
-                }
-        json.dump({'params': params, 'metrics': metrics}, f)
-
-    print("Metrics for length of shortest distinguishing string:")
-    for lbl in metrics:
-        print(f"{lbl:16}:  {metrics[lbl]}")
