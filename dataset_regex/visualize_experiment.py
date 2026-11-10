@@ -21,7 +21,7 @@ if __name__ == "__main__":
     plt.title(f'Length of shortest distinguishing string for\nrandomly sampled regex (regex101)')
     plt.xlabel('Shortest distinguishing string length')
     plt.ylabel('Count')
-    plt.savefig('dataset_regex/fig.jpg')
+    plt.savefig('visuals/regex101-distribution.jpg')
 
     import statistics
     mu = statistics.mean(distribution)
@@ -30,5 +30,5 @@ if __name__ == "__main__":
     print(f"Mean SDS length: {mu}")
     print(f"Variance: {s2}")
 
-    import pdb
-    pdb.set_trace()
+    #import pdb
+    #pdb.set_trace()

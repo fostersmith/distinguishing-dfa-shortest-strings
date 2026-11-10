@@ -83,9 +83,9 @@ def visualize_wrt_alphabet():
 
             varAx.plot(alphabet_sizes, variances, label=f'p={p}')
 
-        fig.suptitle(f"Experiment: Uniformly DFAs with {N} states")
+        fig.suptitle(f"Experiment: Uniformly random DFAs with {N} states")
         fig.set_figheight(6)
-        fig.set_figwidth(10)
+        fig.set_figwidth(12)
 
         meanAx.set_title(f"Mean SDS Length")
         meanAx.set_xlabel("Alphabet Size |Σ|")
@@ -131,7 +131,7 @@ def visualize_wrt_dfa_size():
 
         fig.suptitle(f"Experiment: Uniformly Random DFAs with Alphabet Size of {N}")
         fig.set_figheight(6)
-        fig.set_figwidth(10)
+        fig.set_figwidth(12)
 
         meanAx.set_title(f"Mean SDS Length")
         meanAx.set_xlabel("Number of States")
@@ -148,16 +148,3 @@ if __name__ == "__main__":
     visualize_wrt_dfa_size()
     visualize_wrt_alphabet()
     visualize_experiments()
-    #for res_dir in os.scandir('experiments/random_all/'):
-    #    #samples_file = os.path.join(res_dir, "samples.json")
-    #    results_file = os.path.join(res_dir, "results.json")
-    #    metrics_file = os.path.join(res_dir, "metrics.json")
-    #    #with open(samples_file, 'r') as f:
-    #    #    samples = json.load(f)
-    #    with open(results_file, 'r') as f:
-    #        results = json.load(f)
-    #    with open(metrics_file, 'r') as f:
-    #        metrics = json.load(f)
-
-    #    os.makedirs('visuals/length_distributions/', exist_ok=True)
-    #    visualize_experiment(results, metrics, f'visuals/length_distributions/{os.path.basename(res_dir).replace('.','-')}.jpg')
