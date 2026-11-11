@@ -1,7 +1,5 @@
 from random_dfa_generation.random_dfa import DFA
 
-binary_symbols = {'0', '1'}
-
 A1 = DFA(
          Q={'A', 'B'},
          Sigma={'0', '1'},
